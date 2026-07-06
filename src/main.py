@@ -1,0 +1,1 @@
+print("Finance Data Platform is ready!")
