@@ -1,0 +1,12 @@
+CREATE SCHEMA IF NOT EXISTS raw;
+
+CREATE TABLE IF NOT EXISTS raw.asset_prices (
+    id SERIAL PRIMARY KEY,
+    symbol VARCHAR(20) NOT NULL,
+    price NUMERIC(18,6) NOT NULL,
+    currency VARCHAR(10) NOT NULL,
+    collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+); 
+
+ALTER TABLE raw.asset_prices
+ADD COLUMN asset_type VARCHAR(20);

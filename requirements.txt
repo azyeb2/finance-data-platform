@@ -1,0 +1,7 @@
+psycopg2-binary
+SQLAlchemy
+python-dotenv
+yfinance
+pandas
+kafka-python
+requests
