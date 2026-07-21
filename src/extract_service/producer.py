@@ -1,27 +1,46 @@
 import json
 import yfinance as yf
 from kafka import KafkaProducer
+from src.database.connection import get_connection
 
 producer = KafkaProducer(
     bootstrap_servers="localhost:9092",
     value_serializer=lambda v: json.dumps(v).encode("utf-8")
 )
 
-assets = [
-    {"symbol": "USDTRY=X", "asset_type": "currency"},
-    {"symbol": "EURTRY=X", "asset_type": "currency"},
-    {"symbol": "GBPTRY=X", "asset_type": "currency"},
+def get_assets():
 
-    {"symbol": "GC=F", "asset_type": "metal"},
-    {"symbol": "SI=F", "asset_type": "metal"},
-    {"symbol": "PL=F", "asset_type": "metal"},
-    {"symbol": "PA=F", "asset_type": "metal"},
-    {"symbol": "HG=F", "asset_type": "metal"},
-]
+    connection = get_connection()
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT symbol, asset_type
+        FROM reference.assets
+    """)
+
+    rows = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    assets = []
+
+    for row in rows:
+
+        assets.append(
+            {
+                "symbol": row[0],
+                "asset_type": row[1]
+            }
+        )
+
+    return assets
 
 
 def get_market_data():
 
+    assets = get_assets()
     market_data = []
 
     for asset in assets:

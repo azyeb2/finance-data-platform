@@ -5,8 +5,8 @@ CREATE TABLE IF NOT EXISTS raw.asset_prices (
     symbol VARCHAR(20) NOT NULL,
     price NUMERIC(18,6) NOT NULL,
     currency VARCHAR(10) NOT NULL,
-    collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-); 
+    collected_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    asset_type VARCHAR(20) NOT NULL,
 
-ALTER TABLE raw.asset_prices
-ADD COLUMN asset_type VARCHAR(20);
+    UNIQUE(symbol, collected_at)
+); 
