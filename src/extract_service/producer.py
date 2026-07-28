@@ -1,7 +1,11 @@
 import json
 import yfinance as yf
+import time
 from kafka import KafkaProducer
 from src.database.connection import get_connection
+from datetime import datetime, UTC
+
+FETCH_INTERVAL = 300
 
 producer = KafkaProducer(
     bootstrap_servers="localhost:9092",
@@ -52,19 +56,27 @@ def get_market_data():
          "symbol": info["symbol"],
          "price": info["regularMarketPrice"],
          "currency": info["currency"],
-         "asset_type": asset["asset_type"]
+         "asset_type": asset["asset_type"],
+         "collected_at": datetime.now(UTC).isoformat()
        }
        
         market_data.append(data)
 
     return market_data
 
+try:
+    while True:
 
-market_data = get_market_data()
+        market_data = get_market_data()
 
-for data in market_data:
-    producer.send("market_data_raw", value=data)
+        for data in market_data:
+            producer.send("market_data_raw", value=data)
 
-producer.flush()
+        producer.flush()
 
-print("Veriler Kafka'ya başarıyla gönderildi.")
+        print("Veriler Kafka'ya başarıyla gönderildi.")
+
+        time.sleep(FETCH_INTERVAL)
+
+except KeyboardInterrupt:
+    print("Producer durduruldu.")

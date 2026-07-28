@@ -23,15 +23,16 @@ for message in consumer:
     cursor.execute(
         """
         INSERT INTO raw.asset_prices
-        (symbol, asset_type, price, currency)
-        VALUES (%s, %s, %s, %s)
+        (symbol, asset_type, price, currency, collected_at)
+        VALUES (%s, %s, %s, %s, %s)
+        ON CONFLICT (symbol, collected_at) DO NOTHING
         """,
         (
             data["symbol"],
             data["asset_type"],
             data["price"],
             data["currency"],
-            
+            data["collected_at"]
         ),
     )
 
