@@ -105,6 +105,18 @@ def calculate_daily_summary(rows):
         lambda x: "up" if x > 0.5 else ("down" if x < -0.5 else "flat")
     )
 
+    summary = summary.sort_values(["symbol", "summary_date"]).reset_index(drop=True)
+    summary["ma7"] = (
+        summary.groupby("symbol")["avg_price"]
+        .transform(lambda s: s.rolling(window=7, min_periods=1).mean())
+        .round(6)
+    )
+    summary["ma30"] = (
+        summary.groupby("symbol")["avg_price"]
+        .transform(lambda s: s.rolling(window=30, min_periods=1).mean())
+        .round(6)
+    )
+
     summary["insight"] = summary.apply(generate_insight, axis=1)
 
     summary = summary.loc[
@@ -127,6 +139,8 @@ def calculate_daily_summary(rows):
             "volatility",
             "trend",
             "daily_change_pct",
+            "ma7",
+            "ma30",
             "price_count",
             "insight"
         ],
@@ -161,10 +175,12 @@ def save_to_mart(summary_df):
             volatility,
             trend,
             daily_change_pct,
+            ma7,
+            ma30,
             price_count,
             insight
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (symbol, summary_date) DO UPDATE SET
             display_name = EXCLUDED.display_name,
             asset_type = EXCLUDED.asset_type,
@@ -181,6 +197,8 @@ def save_to_mart(summary_df):
             volatility = EXCLUDED.volatility,
             trend = EXCLUDED.trend,
             daily_change_pct = EXCLUDED.daily_change_pct,
+            ma7 = EXCLUDED.ma7,
+            ma30 = EXCLUDED.ma30,
             price_count = EXCLUDED.price_count,
             insight = EXCLUDED.insight;
     """

@@ -21,6 +21,8 @@ CREATE TABLE mart.asset_prices (
     volatility NUMERIC(18,6) NOT NULL,
     trend VARCHAR(10) NOT NULL,
     daily_change_pct NUMERIC(12,6),
+    ma7 NUMERIC(18,6) NOT NULL,
+    ma30 NUMERIC(18,6) NOT NULL,
     price_count INTEGER NOT NULL,
     insight TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
