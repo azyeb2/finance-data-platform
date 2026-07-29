@@ -6,3 +6,6 @@ pandas
 kafka-python
 requests
 matplotlib
+fastapi
+uvicorn
+streamlit

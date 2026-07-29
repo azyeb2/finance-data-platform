@@ -5,6 +5,7 @@ from kafka import KafkaProducer
 from src.database.connection import get_connection
 from datetime import datetime, UTC
 
+# Producer, her 300 saniyede bir (5 dakikada bir) veri çekip Kafka'ya gönderir.
 FETCH_INTERVAL = 300
 
 producer = KafkaProducer(
